@@ -56,12 +56,14 @@ model Session {
 
 model User {
     id            String    @id @default(cuid())
-    firstName     String?
-    lastName      String?
-    email         String?   @unique
+    firstName     String
+    lastName      String
+    name          String?
+    email         String    @unique
     password      String
     emailVerified DateTime?
     image         String?
+    credits       Int       @default(10000)
     accounts      Account[]
     sessions      Session[]
     posts         Post[]

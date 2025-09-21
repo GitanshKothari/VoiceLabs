@@ -19,11 +19,6 @@ declare module "next-auth" {
       // role: UserRole;
     } & DefaultSession["user"];
   }
-
-  // interface User {
-  //   // ...other properties
-  //   // role: UserRole;
-  // }
 }
 
 /**
@@ -77,18 +72,20 @@ export const authConfig = {
   pages: {
     signIn: "/auth/sign-in",
   },
+  session: { strategy: "jwt" },
   adapter: PrismaAdapter(db),
   callbacks: {
     session: ({ session, token }) => ({
       ...session,
       user: {
         ...session.user,
-        id: token.sub,
+        id: token.id as string,
       },
     }),
     jwt: ({ token, user }) => {
       if (user) {
         token.id = user.id;
+        token.sub = user.id; // Ensure sub is set for compatibility
       }
       return token;
     },
