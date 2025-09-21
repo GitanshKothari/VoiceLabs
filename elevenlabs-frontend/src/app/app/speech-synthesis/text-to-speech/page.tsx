@@ -23,9 +23,18 @@ export default async function TextToSpeechPage() {
     credits = user?.credits ?? 0;
   }
   const service = "styletts2";
-
+  const TextToSpeechTabs = [
+    {
+      name: "Generate",
+      path: "/app/speech-synthesis/text-to-speech",
+    },
+    {
+      name: "History",
+      path: "/app/sound-effects/history",
+    },
+  ];
   return (
-    <PageLayout currentPage="text-to-speech" user={user}>
+    <PageLayout currentPage="text-to-speech" user={user} tabs={TextToSpeechTabs} pageTitle="Text to Speech">
       <div className="p-8">
         <div className="mx-auto max-w-4xl">
           <h1 className="text-foreground mb-6 text-3xl font-bold">Dashboard</h1>
