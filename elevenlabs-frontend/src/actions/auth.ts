@@ -13,7 +13,7 @@ export async function signUp(data: SignUpFormValues) {
     });
 
     if (existingUser) {
-      throw new Error("User with this email already exists.");
+      return { error: "Email is already in use." };
     }
 
     const hashedPassword = await bcrypt.hash(validatedData.password, 10);
