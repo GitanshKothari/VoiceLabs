@@ -67,6 +67,24 @@ model User {
     accounts      Account[]
     sessions      Session[]
     posts         Post[]
+    generatedAudioClips GeneratedAudioClip[]
+}
+
+
+model GeneratedAudioClip {
+    id                  String   @id @default(cuid())
+    userId              String
+    text                String
+    voice               String?
+    originalVoiceS3Key  String
+    s3Key               String
+    failed              Boolean  @default(false)
+    createdAt           DateTime @default(now())
+    service             String
+
+    user                User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+    @@index([userId])
+    @@index([createdAt])
 }
 
 model VerificationToken {
