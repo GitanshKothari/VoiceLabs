@@ -1,0 +1,60 @@
+# -----------------
+# Node / Frontend
+# -----------------
+node_modules/
+.next/
+.vercel/
+dist/
+out/
+
+# -----------------
+# Python / ML
+# -----------------
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.egg-info/
+.venv/
+.env
+.env.local
+.env.*.local
+.ipynb_checkpoints/
+
+# -----------------
+# Model / Dataset files
+# -----------------
+*.pth
+*.pt
+*.ckpt
+*.h5
+*.onnx
+*.pb
+*.tflite
+*.weights
+*.bin
+*.npz
+*.npy
+*.csv
+*.tsv
+*.zip
+*.tar
+*.tar.gz
+
+# -----------------
+# Logs / temp
+# -----------------
+*.log
+logs/
+wandb/
+mlruns/
+
+# -----------------
+# OS / Editor junk
+# -----------------
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+.idea/
+.vscode/

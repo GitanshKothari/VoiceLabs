@@ -1,0 +1,528 @@
+1
+00:00:01,668 --> 00:00:03,591
+A deep dive into LeNet5.
+
+2
+00:00:04,051 --> 00:00:14,546
+The 1998 paper, Gradient-Based Learning Applied to Document Recognition, introduced LeNet5, a convolutional network designed for handwritten character recognition.
+
+3
+00:00:15,447 --> 00:00:22,637
+At that time, most recognition systems relied on handcrafted features, such as edge detectors or histograms.
+
+4
+00:00:23,739 --> 00:00:28,806
+These approaches required domain expertise and often struggled with the wide variability
+
+5
+00:00:28,786 --> 00:00:31,493
+in handwriting styles.
+
+6
+00:00:31,513 --> 00:00:44,027
+What struck me while reading the paper is how bold it was to move away from feature engineering and let the network learn everything directly from pixels.
+
+7
+00:00:45,661 --> 00:00:51,171
+LeNet5 was trained on the MNIST dataset of 28x28 grayscale digits.
+
+8
+00:00:51,893 --> 00:01:04,657
+The author padded the images to 32x32 and trained the model with backpropagation, reaching around 98.9% test accuracy, very high for the time.
+
+9
+00:01:04,677 --> 00:01:08,023
+Even though the dataset is simply by today's standards,
+
+10
+00:01:08,003 --> 00:01:16,573
+I still remember using MNIST in my own coursework and realizing how quickly CNNs outperformed traditional methods.
+
+11
+00:01:16,593 --> 00:01:23,621
+What makes LeanNet particularly important is it introduced building blocks that are still used today.
+
+12
+00:01:23,641 --> 00:01:29,488
+Local receptive fields, weight sharing, pooling, and multi-layer hierarchical feature extraction.
+
+13
+00:01:29,468 --> 00:01:39,726
+Even in my own classes on neural networks, this was the model we studied when we first transitioned from fully connected architectures to convolutional ones.
+
+14
+00:01:40,648 --> 00:01:50,886
+Looking back now, after working with larger CNNs in internships, it's fascinating to see how many of the core ideas were already present in 1998.
+
+15
+00:01:52,469 --> 00:01:55,752
+If Leenet was the spark, AlexNet was the explosion.
+
+16
+00:01:56,053 --> 00:02:10,568
+Published in 2012 by Alex Krasinski, Ilya Suskiver and Jeffrey Hinton, AlexNet stunned the computer vision community by winning the ImageNet large-scale visual recognition challenge with a massive margin.
+
+17
+00:02:11,149 --> 00:02:16,975
+Its top 5 error was 15.3% compared to the runner-up at 26.2%.
+
+18
+00:02:16,955 --> 00:02:22,382
+That single result is often credited with kicking off the deep learning boom of the past decade.
+
+19
+00:02:23,163 --> 00:02:32,054
+What makes AlexNet significant is not just its accuracy but how it combined several ideas that had been floating around in the research community.
+
+20
+00:02:32,675 --> 00:02:40,465
+Larger datasets, GPUs for training, ReLU activations, and dropout regularizations were all put together in one coherent model.
+
+21
+00:02:40,445 --> 00:02:44,309
+that showed the world deep learning could also scale.
+
+22
+00:02:45,070 --> 00:02:50,695
+Even in my own coursework, AlexNet came right after LeanNet in the timeline.
+
+23
+00:02:50,715 --> 00:02:57,722
+It was the example of how scaling up data, compute and network size could turn a neat idea into a dominant paradigm.
+
+24
+00:02:58,523 --> 00:03:07,752
+Revisiting it now, after having worked on modern CNNs, I can see clearly how many techniques we take for granted today were popularized by this paper.
+
+25
+00:03:09,419 --> 00:03:14,705
+The architecture of AlexNet looks simple by today's standards, but it was massive in 2012.
+
+26
+00:03:14,945 --> 00:03:19,570
+It had about 60 million parameters and was trained on two GPUs in parallel.
+
+27
+00:03:20,951 --> 00:03:28,840
+When I trained this on a subset of ImageNet, the model quickly became computationally heavy compared to LeanNet or even smaller CNNs.
+
+28
+00:03:28,860 --> 00:03:33,685
+It made me appreciate just how critical GPUs were for the success of AlexNet.
+
+29
+00:03:33,705 --> 00:03:38,650
+Without them, the training time would have been completely unrealistic.
+
+30
+00:03:38,630 --> 00:03:49,785
+What I learned was that AlexNet's main contribution wasn't inventing CNNs, but proving they could scale and outperform traditional methods on a large, complex dataset.
+
+31
+00:03:49,805 --> 00:03:50,806
+What surprised me?
+
+32
+00:03:51,427 --> 00:03:58,657
+How modern practices were already in place by 2012, like ReLU, Dropout, and Augmentation.
+
+33
+00:03:59,898 --> 00:04:05,025
+What I'm curious about is the split across two GPUs was done manually.
+
+34
+00:04:05,005 --> 00:04:15,159
+I would like to dive deeper into how they parallelized, layered and whether similar tricks could be relevant today with multi GPU training.
+
+35
+00:04:15,179 --> 00:04:20,225
+Connection to later models, AlexNet directly inspired VGG and ResNet.
+
+36
+00:04:20,245 --> 00:04:24,491
+Each one made the network deeper and more efficient, but the template was set here.
+
+37
+00:04:25,172 --> 00:04:30,439
+Convolutional blocks, plus pooling, plus fully connected layers.
+
+38
+00:04:31,668 --> 00:04:39,385
+After AlexNet shook the field in 2012, researchers quickly began exploring whether deeper networks could perform even better.
+
+39
+00:04:39,405 --> 00:04:48,124
+In 2014, Karen Simoyan and Andrew Zinserman introduced the VGG networks from the University of Oxford's Visual Geometry Group.
+
+40
+00:04:48,104 --> 00:04:56,318
+The main insight was that increasing depth with smaller filters could dramatically improve performance on ImageNet.
+
+41
+00:04:56,338 --> 00:05:04,813
+Unlike AlexNet, which mixed large convolution filters with varying kernel sizes, VGG used a very simple and consistent design.
+
+42
+00:05:04,793 --> 00:05:09,978
+stacks of 3x3 convolutions and 2x2 max pooling layers.
+
+43
+00:05:10,639 --> 00:05:19,628
+This uniformity made the network easier to understand and extend, and it showed that going deeper with smaller kernels was the way forward.
+
+44
+00:05:19,648 --> 00:05:30,358
+When I first learned about VGG in class, it was presented as the clean architecture, almost boring compared to GoogleNet or ResNet, but that's what made it so influential.
+
+45
+00:05:30,558 --> 00:05:32,320
+The simplicity was its strength.
+
+46
+00:05:34,510 --> 00:05:38,978
+Training VGG was much more computationally expensive than AlexNet.
+
+47
+00:05:38,998 --> 00:05:42,945
+It highlighted the need for faster GPUs and more memory.
+
+48
+00:05:42,965 --> 00:05:49,397
+Despite that, it became hugely popular in research, especially for transfer learning or smaller datasets.
+
+49
+00:05:50,930 --> 00:05:57,679
+What I learned was that VGG showed that architecture designs doesn't always need to be clever or complex.
+
+50
+00:05:58,279 --> 00:06:01,143
+Depth and consistency can be enough.
+
+51
+00:06:01,924 --> 00:06:12,077
+What surprised me was that how many modern vision tasks still rely on VGG features as a backbone, even though the model is over a decade old.
+
+52
+00:06:12,631 --> 00:06:18,979
+What I'm curious about, VGG had a huge number of parameters due to the fully connected layers.
+
+53
+00:06:18,999 --> 00:06:21,563
+Later models dropped them for efficiency.
+
+54
+00:06:22,123 --> 00:06:26,449
+I would like to explore how much performance really depends on those fully connected layers.
+
+55
+00:06:27,571 --> 00:06:37,744
+Connection to later models, VGG directly influenced Dressnet, which took the idea of depth even further but solved the optimization issues that can come with it.
+
+56
+00:06:39,580 --> 00:06:42,823
+By 2015, the trend in computer vision was clear.
+
+57
+00:06:43,123 --> 00:06:44,805
+Deeper networks kept winning.
+
+58
+00:06:45,505 --> 00:06:52,852
+AlexNet had 8 layers, VGG pushed it to 16 or 19 layers, and GoogleNet went even deeper with inception modules.
+
+59
+00:06:53,532 --> 00:06:55,894
+But there was a growing issue.
+
+60
+00:06:56,495 --> 00:07:00,078
+Many networks deeper did not always make them better.
+
+61
+00:07:01,279 --> 00:07:08,946
+In fact, researchers found that simply stacking more layers often led to worse performance due to the vanishing gradient problem.
+
+62
+00:07:08,926 --> 00:07:18,302
+ResNet, proposed by Kaiming, he and colleagues at Microsoft Research, solved this with a deceptively simple idea.
+
+63
+00:07:18,983 --> 00:07:20,826
+Residual connections.
+
+64
+00:07:20,846 --> 00:07:24,572
+Instead of forcing each layer to learn a fully transformation
+
+65
+00:07:25,835 --> 00:07:35,487
+Instead of forcing each layer to learn a full transformation, ResNet allowed layers to learn residuals, small changes relative to the input.
+
+66
+00:07:35,507 --> 00:07:41,655
+This made optimization dramatically easier and enabled training of networks with over 100 layers.
+
+67
+00:07:42,316 --> 00:07:50,165
+When I first read about ResNet, it stood out because of how minimal the change was, yet how big the impact turned out to be.
+
+68
+00:07:50,185 --> 00:07:54,711
+A single skip connection redefined the way deep networks were built.
+
+69
+00:07:56,682 --> 00:08:01,630
+What struck me when coding this was how natural the skip connection feels.
+
+70
+00:08:01,650 --> 00:08:09,604
+Adding the input back to the output doesn't add much complexity but changes training dynamics completely.
+
+71
+00:08:09,624 --> 00:08:17,357
+When I trained a small ResNet on CIFAR-10, it converged more reliably than a plain deep CNN of similar size.
+
+72
+00:08:18,873 --> 00:08:27,625
+What I learned, ResNet solved the degradation problem in deep networks and opened the door for extremely deep architectures.
+
+73
+00:08:27,645 --> 00:08:38,119
+What surprised me, the skip connection is such a small modification but it became a fundamental building block across deep learning, not just in vision.
+
+74
+00:08:38,139 --> 00:08:47,412
+What I'm curious about, later papers built on this with DenseNet, dense connections and transformers which is residual plus attention.
+
+75
+00:08:47,392 --> 00:08:52,542
+I would like to explore how the skip connection idea generalizes across architectures.
+
+76
+00:08:53,364 --> 00:08:55,368
+Connections to later models.
+
+77
+00:08:55,388 --> 00:09:02,021
+ResNet influenced almost every model that came after, from detection to segmentation to vision transformers.
+
+78
+00:09:02,703 --> 00:09:04,827
+Residual connections are everywhere.
+
+79
+00:09:06,173 --> 00:09:11,640
+By 2014, deeper models were clearly performing better, but there was a major problem.
+
+80
+00:09:12,181 --> 00:09:14,364
+The number of parameters was exploding.
+
+81
+00:09:14,985 --> 00:09:20,792
+VGG-16 had around 138 million parameters, making it expensive to train and deploy.
+
+82
+00:09:21,453 --> 00:09:27,321
+Researchers at Google introduced GoogleNet, which is also called Inception version 1.
+
+83
+00:09:27,301 --> 00:09:32,029
+as a way to go deeper without dramatically increasing computation.
+
+84
+00:09:32,049 --> 00:09:42,165
+The key idea was the inception module, which allowed the network to look at multiple receptive field sizes at the same time and concatenate the results.
+
+85
+00:09:42,846 --> 00:09:48,094
+This captured information at different scales while keeping efficiency under control.
+
+86
+00:09:48,074 --> 00:10:00,605
+Another important trick was the use of 1x1 convolutions for dimensionality reduction, before the heavier 3x3 and 5x5 convolutions.
+
+87
+00:10:00,625 --> 00:10:08,412
+When I first saw GoogleNet in class, it looked very different from the straightforward stack of Leos and AlexNet or VGG.
+
+88
+00:10:08,432 --> 00:10:14,198
+It was the first time I realized that CNNstint always need to be linear chains of Leos.
+
+89
+00:10:14,218 --> 00:10:18,081
+You could design smarter modules and reuse them.
+
+90
+00:10:18,061 --> 00:10:24,929
+GoogleNet was 22 layers deep but had only 5 million parameters which was far less than VGG.
+
+91
+00:10:25,590 --> 00:10:30,196
+It won the ImageNet 2014 challenge with a top 5 error of 6.7%.
+
+92
+00:10:31,097 --> 00:10:39,107
+This modular design made it possible to build very deep networks without having to blow up the number of parameters.
+
+93
+00:10:39,087 --> 00:10:44,499
+When I tried coding it, the inception module felt surprisingly elegant.
+
+94
+00:10:44,519 --> 00:10:49,089
+Each branch is simple, but the concatenation at the end gives it richness.
+
+95
+00:10:49,850 --> 00:10:53,057
+What I learned, GoogleNet showed that depth alone wasn't enough.
+
+96
+00:10:53,338 --> 00:10:58,429
+Efficiency and smart design choices mattered just as much.
+
+97
+00:10:58,409 --> 00:11:02,837
+What surprised me, fully connected layers were almost completely removed.
+
+98
+00:11:02,857 --> 00:11:08,408
+Global average pooling was a new idea at the time and became a standard.
+
+99
+00:11:08,428 --> 00:11:13,918
+What I'm curious about, the auxiliary classifiers are rarely used today.
+
+100
+00:11:13,938 --> 00:11:19,489
+I would like to explore why they helped in GoogleNet and why they didn't stick around in later modules.
+
+101
+00:11:19,469 --> 00:11:21,953
+connection to later models.
+
+102
+00:11:22,514 --> 00:11:31,950
+The inception idea evolved the inception into V2 or V3 and eventually inspired architectures like ResNet and Exception.
+
+103
+00:11:32,711 --> 00:11:37,579
+It marked a transition from linear stacking to modular design.
+
+104
+00:11:37,559 --> 00:11:49,197
+Vision transformers have recently emerged as a competitive alternative to convolutional neural networks that are currently state-of-the-art in different image recognition and computer vision tasks.
+
+105
+00:11:49,878 --> 00:11:58,791
+VIT models outperform the current SOTA CNNs by almost four times in terms of computational efficiency and accuracy.
+
+106
+00:11:58,771 --> 00:12:04,883
+Transformer models have become the de facto status quo in natural language processing.
+
+107
+00:12:05,564 --> 00:12:10,934
+For example, the popular ChatGPT AI chatbot is a transformer-based language model.
+
+108
+00:12:11,495 --> 00:12:15,002
+Specifically, it is based on the GPT architecture.
+
+109
+00:12:16,044 --> 00:12:21,775
+This uses self-attention mechanisms to model the dependencies between words in a text.
+
+110
+00:12:21,755 --> 00:12:33,468
+While the transformer architecture has become the highest standard for tasks involving natural language processing, its use cases relating to computer vision remain limited.
+
+111
+00:12:33,488 --> 00:12:48,724
+In many computer vision tasks, we use attention either in conjunction with the convolutional neural networks or to substitute certain aspects of the CNNs while maintaining their entire composition.
+
+112
+00:12:48,704 --> 00:13:00,323
+Popular image recognition models include Residual Networks, VGG, YOLOv3 and Segment Anything.
+
+113
+00:13:00,343 --> 00:13:12,923
+However, this dependency on CNN is not mandatory and a pure transformer applied directly to sequences of image patches can work exceptionally well on image classification tasks.
+
+114
+00:13:12,903 --> 00:13:26,845
+Vision transformers have recently achieved high competitive performance in benchmarks for several computer vision applications such as image classification, object detection, and semantic image segmentation.
+
+115
+00:13:28,141 --> 00:13:34,390
+Transformer is an efficient and effective transformer-based backbone for general purpose vision tasks.
+
+116
+00:13:35,071 --> 00:13:46,386
+It uses a new technique called cross-shaped window self-attention to analyze different parts of the image simultaneously, making it much faster.
+
+117
+00:13:46,366 --> 00:13:55,908
+The CSWin transformer has surpassed previous SOTA methods like the Swin transformer.
+
+118
+00:13:55,928 --> 00:14:04,408
+In benchmark tasks, CSWin achieved excellent performance including 85.4% top 1 accuracy on ImageNet.
+
+119
+00:14:06,127 --> 00:14:22,873
+The Vision Transformer model architecture was introduced in a research paper published as a conference paper at ICLR 2021, titled An Image is Worth 16x16 Words, Transformers for Image Recognition at Scale.
+
+120
+00:14:23,915 --> 00:14:27,240
+It was developed and published by
+
+121
+00:14:27,220 --> 00:14:29,985
+10 more authors of Google Research brain team.
+
+122
+00:14:31,007 --> 00:14:39,624
+The fine-tuning code and pre-trained VIT models are available on the GitHub of the Google Research team.
+
+123
+00:14:39,644 --> 00:14:40,787
+You can find them here.
+
+124
+00:14:41,408 --> 00:14:47,119
+The VIT models were pre-trained on the ImageNet and ImageNet21k datasets.
+
+125
+00:14:47,099 --> 00:14:57,245
+Origin and History of Vision Transformer Models In the following, we highlight some of the most significant vision transformer developments over the years.
+
+126
+00:14:57,846 --> 00:15:04,483
+These developments are based on the transformer architecture originally proposed for natural language processing.
+
+127
+00:15:04,463 --> 00:15:15,686
+A transformer in machine learning is a deep learning model that uses the mechanisms of attention, differentially weighing the significance of each part of the input sequence of data.
+
+128
+00:15:16,267 --> 00:15:20,535
+Transformers in machine learning are composed of multiple self-attention layers.
+
+129
+00:15:21,096 --> 00:15:26,387
+They are primarily used in the AI subfields of natural language processing.
+
+130
+00:15:26,367 --> 00:15:44,407
+Transformation in machine learning holds strong promises towards a generic learning method that can be applied to various data modalities, including the recent breakthroughs in computer vision achieving standard accuracy with better parameter efficiency.
+
+131
+00:15:44,427 --> 00:15:51,835
+Image classification is a fundamental task in computer vision that involves assigning a label to an image based on its content
+
+132
+00:15:51,815 --> 00:15:59,395
+Over the years, deep CNNs like YOLOv7 have been the state-of-the-art method for image classification.
+
